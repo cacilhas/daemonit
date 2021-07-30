@@ -1,10 +1,20 @@
 package daemonit
 
+import (
+	"os"
+)
+
 func DaemonIt(callback func([]string) error, args []string) error {
 	daemon := true
-	effectiveArgs := make([]string, 0, len(args))
+	argsLen := len(args)
+	var arg0 string
+	if argsLen == 0 {
+		arg0, _ = os.Executable()
+	} else {
+		arg0 = args[0]
+	}
+	effectiveArgs := make([]string, argsLen)
 	i := 0
-	arg0 := args[0]
 	for _, arg := range args {
 		if arg == "--no-daemon" {
 			daemon = false
