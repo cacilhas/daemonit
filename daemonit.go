@@ -1,16 +1,6 @@
 package daemonit
 
-import (
-	"os"
-)
-
 func DaemonIt(arg0 string, callback func([]string) error, args []string) error {
-	if args == nil {
-		args = os.Args
-	}
-	if arg0 == "" {
-		arg0, _ = os.Executable()
-	}
 	daemon := true
 	effectiveArgs := make([]string, 0, len(args))
 	i := 0
