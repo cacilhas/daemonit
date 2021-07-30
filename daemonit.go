@@ -1,6 +1,6 @@
 package daemonit
 
-func DaemonIt(arg0 string, callback func([]string) error, args []string) error {
+func DaemonIt(callback func([]string) error, arg0 string, args []string) error {
 	daemon := true
 	effectiveArgs := make([]string, 0, len(args))
 	i := 0
