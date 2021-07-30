@@ -1,0 +1,6 @@
+.*
+*.bak
+*~
+core
+vendor
+!.gitignore
