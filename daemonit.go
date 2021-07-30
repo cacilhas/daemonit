@@ -4,9 +4,12 @@ import (
 	"os"
 )
 
-func DaemonIt(callback func([]string) error, args []string) error {
+func DaemonIt(arg0 string, callback func([]string) error, args []string) error {
 	if args == nil {
 		args = os.Args
+	}
+	if arg0 == "" {
+		arg0, _ = os.Executable()
 	}
 	daemon := true
 	effectiveArgs := make([]string, 0, len(args))
@@ -20,14 +23,14 @@ func DaemonIt(callback func([]string) error, args []string) error {
 		}
 	}
 	if daemon {
-		if err := lock(args); err != nil {
+		if err := lock(arg0); err != nil {
 			return err
 		}
-		fork(args)
+		fork(arg0, args)
 		return nil
 	} else {
 		res := callback(effectiveArgs[:i])
-		cleanupLock(args)
+		cleanupLock(arg0)
 		return res
 	}
 }

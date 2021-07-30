@@ -10,28 +10,29 @@ import (
 	"syscall"
 )
 
-func lock(args []string) error {
-	var err error
-	var filename string
-
-	if filename, err = lockfile(args); err != nil {
-		return err
-	}
-	if err = checkFileExists(filename); err != nil {
+func lock(arg0 string) error {
+	filename := lockfile(arg0)
+	if err := checkFileExists(filename); err != nil {
 		return err
 	}
 	pid := fmt.Sprintf("%d", os.Getpid())
 	return ioutil.WriteFile(filename, []byte(pid), 0644)
 }
 
-func lockfile(args []string) (string, error) {
+func lockfile(arg0 string) string {
 	var currentUser *user.User
 	var err error
-	processPath := strings.Split(args[0], "/")
+	processPath := strings.Split(arg0, "/")
 	if currentUser, err = user.Current(); err != nil {
-		return "", err
+		currentUser = &user.User{
+			Uid:      "0",
+			Gid:      "0",
+			Username: "",
+			Name:     "",
+			HomeDir:  "/tmp",
+		}
 	}
-	return fmt.Sprintf("/tmp/%s.%s.lock", processPath[len(processPath)-1], currentUser.Username), nil
+	return fmt.Sprintf("/tmp/%s.%s.lock", processPath[len(processPath)-1], currentUser.Username)
 }
 
 func checkFileExists(filename string) error {
@@ -49,8 +50,6 @@ func checkFileExists(filename string) error {
 	return nil
 }
 
-func cleanupLock(args []string) {
-	if filename, err := lockfile(args); err == nil {
-		os.Remove(filename)
-	}
+func cleanupLock(arg0 string) {
+	os.Remove(lockfile(arg0))
 }

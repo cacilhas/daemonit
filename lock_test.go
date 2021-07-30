@@ -14,27 +14,25 @@ func TestLockfile(t *testing.T) {
 		if currentUser, err = user.Current(); err != nil {
 			panic(err)
 		}
-		args := []string{"testRun", "lockfile"}
 		expected := fmt.Sprintf("/tmp/testRun.%s.lock", currentUser.Username)
-		if filename, _ := lockfile(args); filename != expected {
+		if filename := lockfile("testRun"); filename != expected {
 			t.Fatalf("Expected %v, got %v", expected, filename)
 		}
 	})
 
 	t.Run("lock", func(t *testing.T) {
 		// Lock file
-		args := []string{"testRun", "lock"}
-		var filename, _ = lockfile(args)
-		if err := lock(args); err != nil {
+		var filename = lockfile("testRun")
+		if err := lock("testRun"); err != nil {
 			t.Fatalf("error locking daemon: %v", err)
 		}
 		if _, err := os.Lstat(filename); err != nil {
 			t.Fatalf("error checking lock file: %v", err)
 		}
-		if err := lock(args); err == nil {
+		if err := lock("testRun"); err == nil {
 			t.Fatalf("expected error, but nothing raised")
 		}
-		cleanupLock(args)
+		cleanupLock("testRun")
 		if _, err := os.Lstat(filename); !os.IsNotExist(err) {
 			t.Fatalf("expected file not to exist")
 		}
