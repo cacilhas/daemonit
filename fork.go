@@ -5,8 +5,8 @@ import (
 	"time"
 )
 
-func fork(arg0 string, args []string) {
+func fork(args []string) {
 	args = append(args, "--no-daemon")
-	exec.Command(arg0, args...).Start()
+	exec.Command(args[0], args[1:]...).Start()
 	time.Sleep(200 * time.Millisecond)
 }
