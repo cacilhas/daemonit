@@ -16,7 +16,7 @@ func DaemonIt(callback func([]string) error, args []string) error {
 	effectiveArgs := make([]string, argsLen)
 	i := 0
 	for _, arg := range args {
-		if arg == "--no-daemon" {
+		if arg == noDaemonParam {
 			daemon = false
 		} else {
 			effectiveArgs[i] = arg
@@ -27,8 +27,13 @@ func DaemonIt(callback func([]string) error, args []string) error {
 		if err := lock(arg0); err != nil {
 			return err
 		}
-		fork(args)
+		if args[0] == arg0 {
+			fork(arg0, args[1:])
+		} else {
+			fork(arg0, args)
+		}
 		return nil
+
 	} else {
 		res := callback(effectiveArgs[:i])
 		cleanupLock(arg0)
